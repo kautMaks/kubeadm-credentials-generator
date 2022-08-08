@@ -1,5 +1,5 @@
 DOCKER_BIN = docker
-DOCKER_IMAGE = kubeadm-credentials-generator
+DOCKER_IMAGE = kaut/kubeadm-credentials-generator
 
 all: clean build
 
