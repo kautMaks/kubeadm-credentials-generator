@@ -1,19 +1,6 @@
 #!/bin/bash
 
 vault_password_file="/tmp/vault"
-NO_ARGS=0
-
-usage()
-{
-cat << EOF
-
-    Usage: $0 [-e ANSIBLE_VAULT_PASS]
-
-    OPTIONS:
-    -e      Encrypt generated values
-
-EOF
-}
 
 generate_token()
 {
@@ -32,7 +19,6 @@ encrypt()   # first is value, second - name
 
 print_values()
 {
-
     printf "Kubeadm token:\n%s\n" "$(generate_token)"
     printf "Kubeadm cerificate key:\n%s\n" "$(generate_certificate_key)"
 }
@@ -49,22 +35,9 @@ print_encrypted_values()
     printf "Kubeadm cerificate key encrypted:\n%s\n" "$(encrypt ${kubeadm_certificate_key} kubernetes_certificate_key)"
 }
 
-# Was the script execute without arguments?
-if [ $# -eq "$NO_ARGS" ] ; then
+if [ -z "${ANSIBLE_VAULT_PASS}" ]; then
     print_values
+else
+    printf "%s" "${ANSIBLE_VAULT_PASS}" > ${vault_password_file}
+    print_encrypted_values
 fi
-
-# The list of options of the script.
-while getopts "e:h" OPTION ; do
-    case $OPTION in
-        e) printf "%s" "$OPTARG" > ${vault_password_file}
-            print_encrypted_values
-            ;;
-        h) usage
-            exit 0
-            ;;
-        *) usage
-            exit 0
-            ;;
-    esac
-done;
